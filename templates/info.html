@@ -1,151 +1,65 @@
-{% extends "theme/base.html" %}
+{% extends "saas/base.html" %}
+{% block title %}Info · SkillForge{% endblock %}
+{% block search_placeholder %}Search by name, address, or email…{% endblock %}
+{% block page_head %}
+<div class="flex items-start justify-between gap-3 mb-4">
+  <div><h1 class="text-xl font-bold tracking-tight">Info Management</h1>
+  <p class="text-sm text-gray-500 mt-0.5">Searchable registry of personal records.</p></div>
+  <button type="button" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700" data-bs-toggle="modal" data-bs-target="#infoModal" data-mode="create">Add Info</button>
+</div>
+{% endblock %}
 {% block content %}
-<div class="container-xl">
-  <div class="page-header d-print-none" aria-label="Page header">
-    <div class="container-xl">
-      <div class="row align-items-center">
-        <div class="col">
-          <div class="page-pretitle">Overview</div>
-          <div class="d-flex align-items-center gap-3 flex-wrap d-none d-md-flex">
-            <h2 class="page-title mb-0">Info Management</h2>
-          </div>
-          <h2 class="page-title mb-0 d-md-none">Info Management</h2>
-        </div>
-      </div>
+<div id="infoToastContainer" class="fixed top-4 right-4 z-50 space-y-2">
+  {% for message in messages %}
+  <div class="toast text-sm text-gray-700 bg-white border border-gray-200 rounded-lg px-4 py-2.5 shadow" role="status" data-bs-delay="4000">{{ message }}</div>
+  {% endfor %}
+</div>
+<div id="infoAlert" class="hidden mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5" role="alert"></div>
+
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm" id="infoTable">
+      <thead><tr class="text-left text-xs uppercase tracking-wider text-gray-400 border-b border-gray-200 bg-gray-50">
+        <th class="font-semibold px-5 py-3">#</th><th class="font-semibold px-4 py-3">Name</th>
+        <th class="font-semibold px-4 py-3">Age</th><th class="font-semibold px-4 py-3">Address</th>
+        <th class="font-semibold px-4 py-3">Email</th><th class="w-20"></th>
+      </tr></thead>
+      <tbody id="infoTableBody" class="divide-y divide-gray-100">
+      {% for info in infos %}
+      <tr data-row-id="{{ info.id }}" class="hover:bg-gray-50">
+        <td class="px-5 py-3 text-gray-400 tabular-nums">{{ forloop.counter0|add:infos.start_index }}</td>
+        <td class="px-4 py-3 font-medium">{{ info.name }}</td>
+        <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-200 tabular-nums">{{ info.age }}</span></td>
+        <td class="px-4 py-3 text-gray-500">{{ info.address }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ info.email|default:"—" }}</td>
+        <td class="px-4 py-3 whitespace-nowrap">
+          <button type="button" class="text-xs font-medium text-gray-600 hover:text-gray-900 mr-2" data-bs-toggle="modal" data-bs-target="#infoModal" data-mode="edit" data-id="{{ info.id }}" data-name="{{ info.name }}" data-age="{{ info.age }}" data-address="{{ info.address }}" data-email="{{ info.email }}">Edit</button>
+          <button type="button" class="text-xs font-medium text-red-600 hover:text-red-800" data-bs-toggle="modal" data-bs-target="#deleteInfoModal" data-id="{{ info.id }}" data-name="{{ info.name }}">Delete</button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No records found. Try adjusting your search or add a new record.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if infos.paginator.num_pages > 1 %}
+  <div class="flex items-center justify-between px-5 py-3 border-t border-gray-200 text-sm">
+    <p class="text-xs text-gray-500">Showing {{ infos.start_index }} to {{ infos.end_index }} of {{ infos.paginator.count }} records</p>
+    <div class="flex items-center gap-1">
+      {% if infos.has_previous %}<a class="px-2 py-1 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100" href="?page={{ infos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">‹ prev</a>{% endif %}
+      {% for num in infos.paginator.page_range %}<a class="min-w-[2rem] px-2 py-1 text-xs rounded-lg border text-center {% if infos.number == num %}bg-gray-900 text-white border-gray-900 font-semibold{% else %}border-gray-200 text-gray-600 hover:bg-gray-100{% endif %}" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>{% endfor %}
+      {% if infos.has_next %}<a class="px-2 py-1 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100" href="?page={{ infos.next_page_number }}{% if query %}&q={{ query }}{% endif %}">next ›</a>{% endif %}
     </div>
   </div>
-  <br>
-
-  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-1">
-    <form method="GET" class="w-100" style="max-width: 420px;">
-      <div class="input-group">
-        <span class="input-group-text"><i class="ti ti-search"></i></span>
-        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name, address, or email...">
-        {% if query %}
-        <a href="{% url 'info:info_list' %}" class="btn btn-outline-secondary">Clear</a>
-        {% endif %}
-        <button type="submit" class="btn btn-primary">Search</button>
-      </div>
-    </form>
-
-    <button type="button" class="btn btn-primary mt-n4" data-bs-toggle="modal" data-bs-target="#infoModal" data-mode="create">
-      <i class='fas fa-plus-circle me-2'></i> Add Info
-    </button>
-  </div>
-
-  <div class="toast-container position-fixed top-0 end-0 p-3" id="infoToastContainer" aria-live="polite" aria-atomic="true">
-    {% for message in messages %}
-    <div class="toast bg-info-lt" role="status" aria-atomic="true" data-bs-delay="4000" style="--tblr-toast-color: #000;">
-      <div class="d-flex">
-        <div class="toast-body">{{ message }}</div>
-        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <div id="infoAlert" class="alert alert-danger d-none" role="alert"></div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">
-        All Records
-        {% if query %}
-        <span class="text-muted fw-normal">— search results for "{{ query }}"</span>
-        {% endif %}
-      </div>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-vcenter table-hover card-table text-nowrap" id="infoTable">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Address</th>
-            <th>Email</th>
-            <th class="w-1">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="infoTableBody">
-        {% for info in infos %}
-        <tr data-row-id="{{ info.id }}">
-            <td class="text-muted">{{ forloop.counter0|add:infos.start_index }}</td>
-            <td class="fw-semibold">{{ info.name }}</td>
-            <td><span class="badge bg-primary-lt text-primary">{{ info.age }}</span></td>
-            <td class="text-muted">{{ info.address }}</td>
-            <td class="text-muted">{{ info.email|default:"—" }}</td>
-            <td>
-              <div class="d-flex gap-1">
-                <button type="button" class="btn btn-ghost-secondary btn-icon btn-sm" data-bs-toggle="modal" data-bs-target="#infoModal" data-mode="edit" data-id="{{ info.id }}" data-name="{{ info.name }}" data-age="{{ info.age }}" data-address="{{ info.address }}" data-email="{{ info.email }}" title="Edit">
-                  <i class="fas fa-edit text-primary"></i>
-                </button>
-                <button type="button" class="btn btn-ghost-secondary btn-icon btn-sm" data-bs-toggle="modal" data-bs-target="#deleteInfoModal" data-id="{{ info.id }}" data-name="{{ info.name }}" title="Delete">
-                  <i class="fas fa-trash-alt text-danger"></i>
-                </button>
-              </div>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">
-                <div class="empty py-5">
-                    <div class="empty-icon">
-                        <i class="fas fa-address-card fa-2x text-muted"></i>
-                    </div>
-                    <p class="empty-title">No records found</p>
-                    <p class="empty-subtitle">Try adjusting your search or add a new record.</p>
-                    <div class="empty-action">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoModal" data-mode="create">
-                            <i class="fas fa-plus-circle me-2"></i> Add Info
-                        </button>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-    {% if infos.paginator.num_pages > 1 %}
-    <div class="card-footer d-flex align-items-center">
-      <p class="m-0 text-muted">
-        Showing <span class="fw-medium">{{ infos.start_index }}</span>
-        to <span class="fw-medium">{{ infos.end_index }}</span>
-        of <span class="fw-medium">{{ infos.paginator.count }}</span> records
-      </p>
-      <ul class="pagination m-0 ms-auto">
-        {% if infos.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ infos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
-            <i class="ti ti-chevron-left"></i> prev
-          </a>
-        </li>
-        {% endif %}
-        {% for num in infos.paginator.page_range %}
-        <li class="page-item {% if infos.number == num %}active{% endif %}">
-          <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
-        </li>
-        {% endfor %}
-        {% if infos.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ infos.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
-            next <i class="ti ti-chevron-right"></i>
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
-    {% endif %}
-  </div>
+  {% endif %}
 </div>
 
-<div class="modal modal-blur fade" id="infoModal" tabindex="-1">
-  <div class="modal-dialog modal-md modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="infoModalTitle">Add Info</h5>
+<div class="modal fade" id="infoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content !rounded-xl !border-gray-200">
+      <div class="modal-header !border-gray-200">
+        <h5 class="modal-title text-sm font-semibold" id="infoModalTitle">Add Info</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="infoForm">
@@ -153,47 +67,31 @@
         <input type="hidden" name="id" id="info_id">
         <div class="modal-body">
           <div id="infoFormError" class="alert alert-danger d-none"></div>
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label">Name</label>
-              <input type="text" name="name" id="info_name" class="form-control" required>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Age</label>
-              <input type="number" name="age" id="info_age" class="form-control" min="1" max="150" required>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Address</label>
-              <input type="text" name="address" id="info_address" class="form-control" required>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Email <span class="text-muted">(optional)</span></label>
-              <input type="email" name="email" id="info_email" class="form-control">
-            </div>
+          <div class="space-y-3">
+            <div><label class="block text-sm font-medium mb-1">Name</label><input type="text" name="name" id="info_name" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required></div>
+            <div><label class="block text-sm font-medium mb-1">Age</label><input type="number" name="age" id="info_age" min="1" max="150" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required></div>
+            <div><label class="block text-sm font-medium mb-1">Address</label><input type="text" name="address" id="info_address" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required></div>
+            <div><label class="block text-sm font-medium mb-1">Email <span class="text-gray-400">(optional)</span></label><input type="email" name="email" id="info_email" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500"></div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="infoSubmitBtn">Save Info</button>
+        <div class="modal-footer !border-gray-200">
+          <button type="button" class="px-3 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700" id="infoSubmitBtn">Save Info</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<div class="modal modal-blur fade" id="deleteInfoModal" tabindex="-1">
+<div class="modal fade" id="deleteInfoModal" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Delete Info</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete <strong id="deleteInfoName"></strong>?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteInfoBtn">Delete</button>
+    <div class="modal-content !rounded-xl !border-gray-200">
+      <div class="modal-header !border-gray-200"><h5 class="modal-title text-sm font-semibold">Delete Info</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p class="text-sm text-gray-500">Delete <strong id="deleteInfoName" class="text-gray-900"></strong>? This cannot be undone.</p></div>
+      <div class="modal-footer !border-gray-200">
+        <button type="button" class="px-3 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700" id="confirmDeleteInfoBtn">Delete</button>
       </div>
     </div>
   </div>
@@ -213,6 +111,11 @@
   const deleteName = document.getElementById('deleteInfoName');
   let currentInfoId = null;
 
+  function showAlert(msg) {
+    alertBox.textContent = msg;
+    alertBox.classList.remove('hidden');
+  }
+
   document.querySelectorAll('#infoToastContainer .toast').forEach(function(toastEl) {
     bootstrap.Toast.getOrCreateInstance(toastEl).show();
   });
@@ -222,18 +125,14 @@
     document.getElementById('info_id').value = '';
     title.textContent = 'Add Info';
     submitBtn.textContent = 'Save Info';
-    alertBox.classList.add('d-none');
+    alertBox.classList.add('hidden');
     alertBox.textContent = '';
     currentInfoId = null;
   }
 
   modalEl.addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
-    if (!button) {
-      resetForm();
-      return;
-    }
-
+    if (!button) { resetForm(); return; }
     const mode = button.getAttribute('data-mode');
     if (mode === 'edit') {
       const id = button.getAttribute('data-id');
@@ -245,9 +144,7 @@
       document.getElementById('info_age').value = button.getAttribute('data-age');
       document.getElementById('info_address').value = button.getAttribute('data-address');
       document.getElementById('info_email').value = button.getAttribute('data-email');
-    } else {
-      resetForm();
-    }
+    } else { resetForm(); }
   });
 
   deleteModalEl.addEventListener('show.bs.modal', function(event) {
@@ -261,7 +158,6 @@
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(form);
-
     fetch('{% url "info:info_save_ajax" %}', {
       method: 'POST',
       headers: {'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value},
@@ -269,17 +165,10 @@
     })
     .then(response => response.json())
     .then(data => {
-      if (data.error) {
-        alertBox.textContent = data.error;
-        alertBox.classList.remove('d-none');
-        return;
-      }
+      if (data.error) { showAlert(data.error); return; }
       window.location.reload();
     })
-    .catch(() => {
-      alertBox.textContent = 'Something went wrong.';
-      alertBox.classList.remove('d-none');
-    });
+    .catch(() => showAlert('Something went wrong.'));
   });
 
   deleteBtn.addEventListener('click', function() {
@@ -290,9 +179,7 @@
     })
     .then(response => response.json())
     .then(data => {
-      if (data.status === 'deleted') {
-        window.location.reload();
-      }
+      if (data.status === 'deleted') window.location.reload();
     });
   });
 })();

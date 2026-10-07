@@ -1,0 +1,27 @@
+{% extends "saas/base.html" %}
+{% block title %}Skill ledger · SkillForge{% endblock %}
+{% block search_placeholder %}Search builders…{% endblock %}
+{% block page_head %}
+<div class="mb-4"><h1 class="text-xl font-bold tracking-tight">Skill ledger</h1>
+<p class="text-sm text-gray-500 mt-0.5">Independent directory of builders and verified credentials.</p></div>
+{% endblock %}
+{% block content %}
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead><tr class="text-left text-xs uppercase tracking-wider text-gray-400 border-b border-gray-200 bg-gray-50">
+      <th class="font-semibold px-5 py-3">Builder</th><th class="font-semibold px-4 py-3 text-right">Credentials</th>
+      <th class="font-semibold px-4 py-3 text-right">Artifacts</th><th class="w-28"></th>
+    </tr></thead>
+    <tbody class="divide-y divide-gray-100">
+    {% for u in users %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-5 py-3 font-medium">{{ u.username }}</td>
+        <td class="px-4 py-3 text-right tabular-nums">{{ u.badge_count }}</td>
+        <td class="px-4 py-3 text-right tabular-nums text-gray-500">{{ u.artifacts_count }}</td>
+        <td class="px-4 py-3"><a href="{% url 'forge:public_profile' u.username %}" class="text-xs font-medium text-gray-600 hover:text-gray-900">Verify →</a></td>
+      </tr>
+    {% empty %}<tr><td colspan="4" class="px-5 py-10 text-center text-gray-400">No builders found.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

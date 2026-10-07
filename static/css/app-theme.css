@@ -654,6 +654,88 @@ html {
   font-weight: 600;
 }
 
+/* ---- Formal design system (site-wide) ---- */
+:root {
+  --formal-accent: #1e3a5f;
+  --formal-accent-hover: #16294a;
+  --formal-ink: #1f2937;
+  --formal-muted: #64748b;
+  --formal-line: #e2e8f0;
+  --formal-panel: #f8fafc;
+}
+/* ---- Attractive design system (site-wide, customer-facing) ---- */
+:root {
+  --formal-accent: #7c3aed;
+  --formal-accent-hover: #6d28d9;
+  --formal-ink: #1e1b3a;
+  --formal-muted: #6b7194;
+  --formal-line: #e9e7fb;
+  --formal-panel: #f6f4ff;
+  --attract-1a: #6366f1; --attract-1b: #8b5cf6;
+  --attract-2a: #0ea5e9; --attract-2b: #22d3ee;
+  --attract-3a: #10b981; --attract-3b: #34d399;
+  --attract-4a: #f59e0b; --attract-4b: #f43f5e;
+}
+.formal-header { border: 0; border-radius: 1rem; padding: 1.5rem 1.75rem; color: #fff;
+  background: linear-gradient(120deg, #312e81 0%, #6d28d9 55%, #a855f7 100%);
+  box-shadow: 0 18px 38px -18px rgba(109, 40, 217, .55); position: relative; overflow: hidden; }
+.formal-header::after { content: ""; position: absolute; right: -5rem; top: -7rem; width: 22rem; height: 22rem;
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 65%); }
+.formal-pretitle { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.65); position: relative; z-index: 1; }
+.formal-title { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -.02em; margin: .15rem 0 0; position: relative; z-index: 1; }
+.formal-sub { color: rgba(255,255,255,.75); font-size: .87rem; margin-top: .25rem; position: relative; z-index: 1; }
+.formal-header .btn-outline-secondary { color: #fff; border-color: rgba(255,255,255,.4); }
+.formal-header .btn-outline-secondary:hover { background: rgba(255,255,255,.12); color: #fff; }
+.formal-kpi { border: 0; border-radius: 1rem; background: #fff; color: var(--formal-ink);
+  box-shadow: 0 14px 28px -16px rgba(49, 46, 129, .35); position: relative; overflow: hidden;
+  transition: transform .15s ease, box-shadow .15s ease; }
+.formal-kpi:hover { transform: translateY(-3px); box-shadow: 0 20px 36px -16px rgba(49, 46, 129, .45); }
+.formal-kpi::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px;
+  background: linear-gradient(90deg, var(--kpi-a, #6366f1), var(--kpi-b, #8b5cf6)); }
+.formal-kpi.kpi-1 { --kpi-a: var(--attract-1a); --kpi-b: var(--attract-1b); }
+.formal-kpi.kpi-2 { --kpi-a: var(--attract-2a); --kpi-b: var(--attract-2b); }
+.formal-kpi.kpi-3 { --kpi-a: var(--attract-3a); --kpi-b: var(--attract-3b); }
+.formal-kpi.kpi-4 { --kpi-a: var(--attract-4a); --kpi-b: var(--attract-4b); }
+.formal-kpi .kpi-label { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--formal-muted); }
+.formal-kpi .kpi-value { font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, var(--kpi-a, #6366f1), var(--kpi-b, #8b5cf6));
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+.formal-kpi .kpi-note { font-size: .8rem; color: var(--formal-muted); }
+.formal-card { border: 1px solid var(--formal-line); border-radius: 1rem; background: #fff;
+  box-shadow: 0 10px 26px -18px rgba(49, 46, 129, .3); overflow: hidden; }
+.formal-card > .card-header { border-bottom: 1px solid var(--formal-line); background: linear-gradient(180deg, #faf9ff, #f4f1ff);
+  border-radius: 1rem 1rem 0 0; }
+.formal-card .card-title { font-size: .8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--formal-ink); }
+.table thead th { background-color: var(--formal-panel); }
+.table tbody tr:hover { background-color: #f5f3ff; }
+.formal-bar { height: .5rem; border-radius: 100rem; background: #ece9fb; overflow: hidden; }
+.formal-bar > div { height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899); border-radius: 100rem; }
+.formal-num { font-variant-numeric: tabular-nums; }
+.formal-tag { display: inline-block; padding: .15rem .6rem; border-radius: 100rem; font-size: .75rem; font-weight: 700;
+  background: #eef2ff; color: #4c1d95; border: 1px solid #ddd6fe; }
+.formal-tag-acc { background: linear-gradient(90deg, #ede9fe, #fce7f3); color: #7c3aed; border-color: #ddd6fe; }
+.btn-formal { background: linear-gradient(135deg, #7c3aed 0%, #a855f7 60%, #ec4899 130%); border: 0; color: #fff; font-weight: 700;
+  box-shadow: 0 10px 22px -10px rgba(168, 85, 247, .8); }
+.btn-formal:hover, .btn-formal:focus { color: #fff; filter: brightness(1.08);
+  box-shadow: 0 14px 28px -10px rgba(168, 85, 247, .9); }
+
+/* ---- Executive dashboard (formal, clean — dashboard only) ---- */
+.exec-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
+.exec-pretitle { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #64748b; }
+.exec-title { font-size: 1.45rem; font-weight: 700; color: #0f172a; letter-spacing: -.01em; margin: .15rem 0 0; }
+.exec-sub { color: #64748b; font-size: .85rem; margin-top: .25rem; }
+.exec-kpi { background: #fff; border: 1px solid #e2e8f0; border-radius: .6rem; }
+.exec-kpi .kpi-label { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #64748b; }
+.exec-kpi .kpi-value { font-size: 1.75rem; font-weight: 700; color: #0f172a; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.exec-kpi .kpi-note { font-size: .8rem; color: #64748b; }
+.exec-card { background: #fff; border: 1px solid #e2e8f0; border-radius: .6rem; }
+.exec-card > .card-header { background: #fff; border-bottom: 1px solid #e2e8f0; border-radius: .6rem .6rem 0 0; }
+.exec-card .card-title { font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #0f172a; }
+.exec-bar { height: .375rem; border-radius: 100rem; background: #eef2f7; overflow: hidden; }
+.exec-bar > div { height: 100%; background: #1e3a5f; border-radius: 100rem; }
+.btn-exec { background: #1e3a5f; border-color: #1e3a5f; color: #fff; }
+.btn-exec:hover, .btn-exec:focus { background: #152a45; border-color: #152a45; color: #fff; }
+
 @media (max-width: 767.98px) {
   .dh-hero {
     padding: 1.25rem 1.25rem;

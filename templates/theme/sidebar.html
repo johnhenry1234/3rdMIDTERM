@@ -59,6 +59,44 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <span class="dh-nav-section">
+            SkillForge
+          </span>
+        </li>
+        <li class="nav-item mb-1">
+          <a class="nav-link {% if request.resolver_match.app_name == 'forge' %}active{% endif %}" href="{% url 'forge:artifact_list' %}">
+            <span class="nav-link-icon d-md-none d-lg-inline-block">
+              <i class="nav-icon fas fa-cubes"></i>
+            </span>
+            <span class="nav-link-title">Artifacts</span>
+          </a>
+        </li>
+        <li class="nav-item mb-1">
+          <a class="nav-link" href="{% url 'forge:review_queue' %}">
+            <span class="nav-link-icon d-md-none d-lg-inline-block">
+              <i class="nav-icon fas fa-star-half-alt"></i>
+            </span>
+            <span class="nav-link-title">Review Queue</span>
+          </a>
+        </li>
+        <li class="nav-item mb-1">
+          <a class="nav-link" href="{% url 'forge:badge_list' %}">
+            <span class="nav-link-icon d-md-none d-lg-inline-block">
+              <i class="nav-icon fas fa-award"></i>
+            </span>
+            <span class="nav-link-title">Badges</span>
+          </a>
+        </li>
+        <li class="nav-item mb-1">
+          <a class="nav-link" href="{% url 'forge:ledger' %}">
+            <span class="nav-link-icon d-md-none d-lg-inline-block">
+              <i class="nav-icon fas fa-book-open"></i>
+            </span>
+            <span class="nav-link-title">Skill Ledger</span>
+          </a>
+        </li>
+
         {% if user.is_authenticated %}
         <li class="nav-item d-lg-none">
           <a class="nav-link" href="{% url 'logout' %}">

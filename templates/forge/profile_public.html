@@ -1,0 +1,47 @@
+{% extends "saas/base.html" %}
+{% block title %}{{ profile_user.username }} · SkillForge{% endblock %}
+{% block header_search %}{% endblock %}
+{% block page_head %}
+<div class="mb-4"><h1 class="text-xl font-bold tracking-tight">{{ profile_user.username }}</h1>
+<p class="text-sm text-gray-500 mt-0.5">Public skill profile · {{ profile_user.get_full_name|default:profile_user.username }}</p></div>
+{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+  <div class="space-y-4">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm">
+      <div class="px-5 py-3 border-b border-gray-200"><h2 class="text-sm font-semibold">Credentials ({{ awards|length }})</h2></div>
+      <div class="divide-y divide-gray-100">
+      {% for a in awards %}
+        <div class="px-5 py-3"><p class="text-sm font-medium">{{ a.badge.name }}</p>
+        <p class="text-xs text-gray-500 tabular-nums">{{ a.evidence_avg|floatformat:2 }} mean · {{ a.evidence_count }} reviews</p></div>
+      {% empty %}<p class="px-5 py-6 text-sm text-gray-400">No credentials awarded.</p>{% endfor %}
+      </div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+      <h2 class="text-sm font-semibold mb-2">Skill means</h2>
+      <p class="text-sm">Overall: <strong class="tabular-nums">{% if overall.avg_score %}{{ overall.avg_score|floatformat:2 }}{% else %}—{% endif %}</strong> <span class="text-gray-500">({{ overall.review_count }} reviews)</span></p>
+      <div class="mt-2 space-y-1.5">{% for s in skill_summary %}<div class="flex justify-between text-sm"><span>{{ s.skill_name }}</span><span class="text-gray-500 tabular-nums">{{ s.avg_score|floatformat:2 }} ({{ s.review_count }})</span></div>{% endfor %}</div>
+    </div>
+  </div>
+  <div class="xl:col-span-2">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-200"><h2 class="text-sm font-semibold">Public artifacts</h2></div>
+      <table class="w-full text-sm">
+        <thead><tr class="text-left text-xs uppercase tracking-wider text-gray-400 border-b border-gray-200 bg-gray-50">
+          <th class="font-semibold px-5 py-2.5">Title</th><th class="font-semibold px-4 py-2.5">Skill</th>
+          <th class="font-semibold px-4 py-2.5 text-right">Mean</th><th class="font-semibold px-4 py-2.5 text-right">Reviews</th><th class="w-20"></th>
+        </tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for a in artifacts %}
+          <tr class="hover:bg-gray-50"><td class="px-5 py-2.5 font-medium">{{ a.title }}</td>
+          <td class="px-4 py-2.5 text-gray-500">{{ a.skill.name|default:"—" }}</td>
+          <td class="px-4 py-2.5 text-right tabular-nums">{% if a.avg_score %}{{ a.avg_score|floatformat:2 }}{% else %}<span class="text-gray-300">—</span>{% endif %}</td>
+          <td class="px-4 py-2.5 text-right tabular-nums">{{ a.review_count }}</td>
+          <td class="px-4 py-2.5"><a href="{% url 'forge:portfolio' a.share_token %}" class="text-xs font-medium text-gray-600 hover:text-gray-900">Open →</a></td></tr>
+        {% empty %}<tr><td colspan="5" class="px-5 py-8 text-center text-gray-400">No public artifacts.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

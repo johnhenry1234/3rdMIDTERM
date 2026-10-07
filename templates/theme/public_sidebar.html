@@ -1,0 +1,15 @@
+<header class="navbar navbar-expand-md navbar-dark dh-sidebar d-print-none">
+  <div class="container-xl">
+    <a href="{% url 'forge:ledger' %}" class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+      <span class="dh-brand-mark"><i class="fa-solid fa-shield-halved"></i></span>
+      <span class="lh-1"><span class="dh-brand-name">SkillForge</span>
+      <span class="dh-brand-sub">Public Ledger</span></span>
+    </a>
+    <div class="navbar-nav flex-row order-md-last">
+      <div class="nav-item d-flex gap-2">
+        <a href="{% url 'forge:ledger' %}" class="btn btn-ghost-light">Ledger</a>
+        <a href="{% url 'login' %}" class="btn btn-primary">Sign in</a>
+      </div>
+    </div>
+  </div>
+</header>
